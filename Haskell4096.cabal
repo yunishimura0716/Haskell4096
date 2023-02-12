@@ -40,7 +40,9 @@ library
 executable Haskell4096-exe
   main-is: Main.hs
   other-modules:
-      Data
+      Board
+      GameData
+      Grid
       Paths_Haskell4096
   hs-source-dirs:
       app

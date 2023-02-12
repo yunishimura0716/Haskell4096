@@ -1,4 +1,4 @@
-module Data where
+module GameData where
 
 import System.Random
 
@@ -16,7 +16,7 @@ data Grid = Grid {
 }
 
 -- Board
-type Board = [Grid]
+type Board = [[Grid]]
 
 -- Game State
 data GameState = GameState {
