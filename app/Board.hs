@@ -31,13 +31,13 @@ fromLeftShiftBoard dirct board
   | dirct == D = transpose (map reverse board) 
 
 -- remove blank grid from left
-removeBlanks :: [Grid] -> [Grid]
-removeBlanks [] = []
-removeBlanks (hd:tr) =
+removeBlanks :: Int -> Int -> [Grid] -> [Grid]
+removeBlanks _ _ [] = []
+removeBlanks x y (hd:tr) =
   if (value hd) == 0
-    then removeBlanks tr 
+    then removeBlanks x y tr 
   else
-    hd:(removeBlanks tr)
+    (Grid (value hd) (x, y)):(removeBlanks (x+1) y tr)
 
 -- add blanks to the tail of the list
 addBlanks :: Int -> Int -> Int -> [Grid] -> [Grid]
@@ -64,9 +64,10 @@ leftShiftGrids grids =
   addBlanks n x y resultGrids
     where
       n = (length grids) - (length resultGrids)
-      (x, y) = position (last grids)
+      (x, _) = position (last resultGrids)
       resultGrids = leftShift gridsNoBlank
-      gridsNoBlank = removeBlanks grids
+      gridsNoBlank = removeBlanks 0 y grids
+      (_, y) = position (last grids)
       
 -- behave left shifting on the board
 leftShiftBoard :: Board -> Board
