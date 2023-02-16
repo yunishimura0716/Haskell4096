@@ -41,6 +41,7 @@ executable Haskell4096-exe
   main-is: Main.hs
   other-modules:
       Board
+      Game
       GameData
       Grid
       Paths_Haskell4096

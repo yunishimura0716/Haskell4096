@@ -14,6 +14,15 @@ createBoard n =
       lastIndex = n * n - 1
       getY = snd . position
 
+-- clear the positions on the board
+clearBoard :: Board -> Board
+clearBoard board =
+  [ [(Grid (getGridValue x y) (x,y)) | x <- [0..(n-1)]] | y <- [0..(n-1)] ]
+    where
+      getGridValue x y = (value (getGrid x y))
+      getGrid x y = (board !! y) !! x
+      n = length board
+
 -- rotate the board by direction to be left shifting 
 toLeftShiftBoard :: Direction -> Board -> Board
 toLeftShiftBoard dirct board
@@ -30,6 +39,7 @@ fromLeftShiftBoard dirct board
   | dirct == U = transpose board
   | dirct == D = transpose (map reverse board) 
 
+
 -- remove blank grid from left
 removeBlanks :: Int -> Int -> [Grid] -> [Grid]
 removeBlanks _ _ [] = []
@@ -44,28 +54,28 @@ addBlanks :: Int -> Int -> Int -> [Grid] -> [Grid]
 addBlanks 0 _ _ grids = grids
 addBlanks n _ y [] = [(Grid 0 (i, y)) | i <- [0..(n-1)]]
 addBlanks n x y grids =
-  addBlanks (n-1) x y (grids ++ [Grid 0 (x+1, y)])
+  addBlanks (n-1) (x+1) y (grids ++ [Grid 0 (x, y)])
 
 -- left shifting on the list without blanks
-leftShift :: [Grid] -> [Grid]
-leftShift [] = []
-leftShift [grid] = [grid]
-leftShift (hd:hd2:tr) 
-  | result = grid:(leftShift tr)
-  | not result = hd:(leftShift (hd2:tr))
+leftShift :: Int -> Int -> [Grid] -> [Grid]
+leftShift _ _ [] = []
+leftShift x y [grid] = [Grid (value grid) (x, y)]
+leftShift x y (hd:hd2:tr) 
+  | result = grid:(leftShift (x+1) y tr)
+  | not result = hd:(leftShift (x+1) y (hd2:tr))
     where 
-      (grid, result) = combineGrids hd hd2
+      (grid, result) = combineGrids x y hd hd2
       
 
 -- behave left shifting on the list of grids
 leftShiftGrids :: [Grid] -> [Grid]
 leftShiftGrids [grid] = [grid] 
 leftShiftGrids grids =
-  addBlanks n x y resultGrids
+  addBlanks n (x+1) y resultGrids
     where
       n = (length grids) - (length resultGrids)
       (x, _) = position (last resultGrids)
-      resultGrids = leftShift gridsNoBlank
+      resultGrids = leftShift 0 y gridsNoBlank
       gridsNoBlank = removeBlanks 0 y grids
       (_, y) = position (last grids)
       
@@ -75,4 +85,7 @@ leftShiftBoard board = map leftShiftGrids board
 
 -- behave shifting with direction on the board
 shiftBoard :: Direction -> Board -> Board
-shiftBoard dirct board = fromLeftShiftBoard dirct (leftShiftBoard (toLeftShiftBoard dirct board))
+shiftBoard dirct board = 
+  clearBoard newBoard
+  where
+    newBoard = fromLeftShiftBoard dirct (leftShiftBoard (toLeftShiftBoard dirct board))

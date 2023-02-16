@@ -14,6 +14,7 @@ data Grid = Grid {
   value :: Int,
   position :: Position
 }
+  deriving (Show)
 
 -- Board
 type Board = [[Grid]]
@@ -21,9 +22,11 @@ type Board = [[Grid]]
 -- Game State
 data GameState = GameState {
   board :: Board,
-  randomSeed :: StdGen
+  seed :: StdGen
 }
+  deriving (Show)
 
 -- Game Result
-data GameResult = EndOfGame 
+data GameResult = EndOfGame GameState
                 | ContinueGame GameState
+  deriving (Show)
