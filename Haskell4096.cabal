@@ -44,6 +44,8 @@ executable Haskell4096-exe
       Game
       GameData
       Grid
+      Render
+      UIConstant
       Paths_Haskell4096
   hs-source-dirs:
       app

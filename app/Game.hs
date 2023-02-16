@@ -5,9 +5,11 @@ import Data.List
 import GameData
 import Board
 import Grid
+import UIConstant
+import Render
 
--- define game
-type Game = Direction -> GameState -> GameResult
+instance Model GameState where
+	render g = render $ board g
 
 giveRandomElement :: StdGen -> [Int] -> Int
 giveRandomElement generator giveList = giveList !! rand where
@@ -37,6 +39,10 @@ randomInsert dirct seed board =
       n = length board
       lfBoard = toLeftShiftBoard dirct board
 
+
+-- define game
+type Game = Direction -> GameState -> GameResult
+
 -- play a game
 playGame :: Game
 playGame dirct game =
@@ -53,13 +59,13 @@ playGame dirct game =
       iscontinue = True
       newBoard1 = shiftBoard dirct (board game)
 -- continue or dead
-continue :: GameResult -> (GameState, Bool)
-continue (ContinueGame game) = (game, True)
-continue (EndOfGame game) = (game, False)
+gameContinue :: GameResult -> (GameState, Bool)
+gameContinue (ContinueGame game) = (game, True)
+gameContinue (EndOfGame game) = (game, False)
 
 -- play
-play :: GameState -> IO GameState
-play game =
+playCUI :: GameState -> IO GameState
+playCUI game =
   do
     line <- getLine
     let result =if line == "L"
@@ -73,10 +79,10 @@ play game =
                 else 
                   playGame L game
     
-    let (newGame, cond) = continue result
+    let (newGame, cond) = gameContinue result
     print (board newGame)
     if cond
-      then play newGame
+      then playCUI newGame
     else
       return newGame
       

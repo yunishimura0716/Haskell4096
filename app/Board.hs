@@ -1,9 +1,45 @@
+{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
+
 module Board where
 
 import Data.List
 import GameData
 import Grid
+import Graphics.Gloss
+import Render
+import UIConstant
 
+
+boardSize :: Int -> Float
+boardSize n = gridSize * factor + dividerSize * (factor+1)
+  where
+    factor = fromIntegral n
+
+boardFrame :: Int -> Picture
+boardFrame numSlots = pictures [fullboard, slots]
+  where
+    fullboard = color boardBackground $ rectangleSolid (boardSize numSlots) (boardSize numSlots)
+    slots = translate fitGridToBoard fitGridToBoard . pictures $ map f [0,1..lastIndex]
+      where
+        lastIndex = numSlots * numSlots - 1
+    f n = translate (x*size) (y*size) $ color slotBackground (rectangleSolid gridSize gridSize)
+      where
+        size = gridSize + dividerSize
+        x = fromIntegral $ mod n numSlots
+        y = fromIntegral $ div n numSlots
+
+
+instance Model Board where
+  render b = pictures [(boardFrame n), grids]
+    where
+      grids = translate fitGridToBoard fitGridToBoard (pictures $ map render flatBoard)
+      flatBoard = flattenBoard b
+      n = length b
+
+-- flatten the board to list of grids
+flattenBoard :: Board -> [Grid]
+flattenBoard board =
+  foldl (\acc x -> acc ++ x) [] board
 
 -- create a board with a number of rows/columns
 createBoard :: Int -> [[Grid]]
@@ -28,16 +64,16 @@ toLeftShiftBoard :: Direction -> Board -> Board
 toLeftShiftBoard dirct board
   | dirct == L = board
   | dirct == R = map reverse board
-  | dirct == U = transpose board
-  | dirct == D = map reverse (transpose board)
+  | dirct == U = map reverse (transpose board)
+  | dirct == D = transpose board 
 
 -- rotate the board by direction to be orignal from left shifting 
 fromLeftShiftBoard :: Direction -> Board -> Board
 fromLeftShiftBoard dirct board
   | dirct == L = board
   | dirct == R = map reverse board
-  | dirct == U = transpose board
-  | dirct == D = transpose (map reverse board) 
+  | dirct == U = transpose (map reverse board) 
+  | dirct == D = transpose board
 
 
 -- remove blank grid from left
