@@ -14,7 +14,7 @@ giveRandomElement generator giveList = giveList !! rand where
     n = length giveList
     (rand, _) = randomR (0,(n-1)) generator
 
--- insert function
+-- insert a random Grid to the board 
 insertFunc :: Int -> Int -> Int -> Board -> [Grid]
 insertFunc randV chosenY i board =
   if i == chosenY
@@ -25,7 +25,7 @@ insertFunc randV chosenY i board =
       grids = board !! i
 
 
--- get add blanks and a grid with random number (2 or 4)
+-- insert a grid with random number (2 or 4)
 randomInsert :: Direction -> StdGen -> Board -> Board
 randomInsert dirct seed board =
   clearBoard (fromLeftShiftBoard dirct newBoard)
