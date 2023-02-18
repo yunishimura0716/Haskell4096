@@ -5,16 +5,18 @@ import Data.List
 import GameData
 import Board
 import Grid
+import UIConstant
+import Render
 
--- define game
-type Game = Direction -> GameState -> GameResult
+instance Model GameState where
+	render g = render $ board g
 
 giveRandomElement :: StdGen -> [Int] -> Int
 giveRandomElement generator giveList = giveList !! rand where
     n = length giveList
     (rand, _) = randomR (0,(n-1)) generator
 
--- insert function
+-- insert a random Grid to the board 
 insertFunc :: Int -> Int -> Int -> Board -> [Grid]
 insertFunc randV chosenY i board =
   if i == chosenY
@@ -25,7 +27,7 @@ insertFunc randV chosenY i board =
       grids = board !! i
 
 
--- get add blanks and a grid with random number (2 or 4)
+-- insert a grid with random number (2 or 4)
 randomInsert :: Direction -> StdGen -> Board -> Board
 randomInsert dirct seed board =
   clearBoard (fromLeftShiftBoard dirct newBoard)
@@ -37,29 +39,43 @@ randomInsert dirct seed board =
       n = length board
       lfBoard = toLeftShiftBoard dirct board
 
+isLost :: GameState -> Bool
+isLost game =
+  b == left_b && b == right_b && b == up_b && b == down_b
+    where
+      down_b = shiftBoard D b
+      up_b = shiftBoard U b
+      right_b = shiftBoard R b
+      left_b = shiftBoard L b
+      b = board game
+
+-- define game
+type Game = Direction -> GameState -> GameResult
+
 -- play a game
 playGame :: Game
 playGame dirct game =
-  if iscontinue
+  if not lost
     then ContinueGame newGame
   else EndOfGame newGame
     where
+      lost = isLost newGame
       newGame = GameState newBoard2 gen
       gen = snd . next . seed $ game 
       newBoard2 = 
-        if iscontinue
+        if isChanged
           then randomInsert dirct (seed game) newBoard1
         else newBoard1
-      iscontinue = True
+      isChanged = newBoard1 /= (board game)
       newBoard1 = shiftBoard dirct (board game)
 -- continue or dead
-continue :: GameResult -> (GameState, Bool)
-continue (ContinueGame game) = (game, True)
-continue (EndOfGame game) = (game, False)
+gameContinue :: GameResult -> (GameState, Bool)
+gameContinue (ContinueGame game) = (game, True)
+gameContinue (EndOfGame game) = (game, False)
 
 -- play
-play :: GameState -> IO GameState
-play game =
+playCUI :: GameState -> IO GameState
+playCUI game =
   do
     line <- getLine
     let result =if line == "L"
@@ -73,10 +89,10 @@ play game =
                 else 
                   playGame L game
     
-    let (newGame, cond) = continue result
+    let (newGame, cond) = gameContinue result
     print (board newGame)
     if cond
-      then play newGame
+      then playCUI newGame
     else
       return newGame
       

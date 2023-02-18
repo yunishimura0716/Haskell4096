@@ -14,7 +14,7 @@ data Grid = Grid {
   value :: Int,
   position :: Position
 }
-  deriving (Show)
+  deriving (Eq, Show)
 
 -- Board
 type Board = [[Grid]]
@@ -30,3 +30,6 @@ data GameState = GameState {
 data GameResult = EndOfGame GameState
                 | ContinueGame GameState
   deriving (Show)
+
+-- Bounce state of a grid used for GUI
+data BounceState = Inflate | Shrink | End deriving (Eq, Show)
