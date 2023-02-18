@@ -23,10 +23,6 @@ window = InWindow "4096" (500, 500) (50, 50)
 background :: Color
 background = white
 
--- ToDo
-isLost :: GameState -> Bool
-isLost _ = False
-
 debugBoard :: GameState -> GameState
 debugBoard game = GameState (traceShowId (board game)) (seed game)
 
@@ -51,7 +47,7 @@ onStep _ result = result
 
 resultRender :: GameResult -> Picture
 resultRender result 
-  | not isContinue = pictures [translate (negate 100) 150 . scale 0.2 0.2 . text $ "You lose keke", render (board game)]
+  | not isContinue = pictures [translate (negate 100) 150 . scale 0.2 0.2 . text $ "You lose!!!!!", render (board game)]
   | otherwise = render (board game)
     where
       (game, isContinue) = gameContinue result
@@ -63,5 +59,6 @@ main =
     let board = createBoard 4
     -- print(board)
     -- play (GameState board seed)
-    let game = (ContinueGame (GameState board seed))
+    let initBoard = randomInsert L seed board
+    let game = (ContinueGame (GameState initBoard seed))
     play window background fps game resultRender onMove onStep

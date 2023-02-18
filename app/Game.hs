@@ -39,6 +39,15 @@ randomInsert dirct seed board =
       n = length board
       lfBoard = toLeftShiftBoard dirct board
 
+isLost :: GameState -> Bool
+isLost game =
+  b == left_b && b == right_b && b == up_b && b == down_b
+    where
+      down_b = shiftBoard D b
+      up_b = shiftBoard U b
+      right_b = shiftBoard R b
+      left_b = shiftBoard L b
+      b = board game
 
 -- define game
 type Game = Direction -> GameState -> GameResult
@@ -46,17 +55,18 @@ type Game = Direction -> GameState -> GameResult
 -- play a game
 playGame :: Game
 playGame dirct game =
-  if iscontinue
+  if not lost
     then ContinueGame newGame
   else EndOfGame newGame
     where
+      lost = isLost newGame
       newGame = GameState newBoard2 gen
       gen = snd . next . seed $ game 
       newBoard2 = 
-        if iscontinue
+        if isChanged
           then randomInsert dirct (seed game) newBoard1
         else newBoard1
-      iscontinue = True
+      isChanged = newBoard1 /= (board game)
       newBoard1 = shiftBoard dirct (board game)
 -- continue or dead
 gameContinue :: GameResult -> (GameState, Bool)

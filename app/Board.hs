@@ -19,10 +19,13 @@ boardFrame :: Int -> Picture
 boardFrame numSlots = pictures [fullboard, slots]
   where
     fullboard = color boardBackground $ rectangleSolid (boardSize numSlots) (boardSize numSlots)
-    slots = translate fitGridToBoard fitGridToBoard . pictures $ map f [0,1..lastIndex]
+    slots = translate fitGridToBoard fitGridToBoard . pictures $ map slotRender [0,1..lastIndex]
       where
+        fitGridToBoard
+          | numSlots == 4 = fitGridToBoard4
+          | numSlots == 5 = fitGridToBoard5
         lastIndex = numSlots * numSlots - 1
-    f n = translate (x*size) (y*size) $ color slotBackground (rectangleSolid gridSize gridSize)
+    slotRender n = translate (x*size) (y*size) $ color slotBackground (rectangleSolid gridSize gridSize)
       where
         size = gridSize + dividerSize
         x = fromIntegral $ mod n numSlots
@@ -33,6 +36,9 @@ instance Model Board where
   render b = pictures [(boardFrame n), grids]
     where
       grids = translate fitGridToBoard fitGridToBoard (pictures $ map render flatBoard)
+      fitGridToBoard
+        | n == 4 = fitGridToBoard4
+        | n == 5 = fitGridToBoard5
       flatBoard = flattenBoard b
       n = length b
 

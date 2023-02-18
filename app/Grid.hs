@@ -9,24 +9,23 @@ import Graphics.Gloss
 instance Model Grid where
   render (Grid n (x,y))
     | n == 0 = blank
-    | otherwise = scale s s . translate (x'/s) (y'/s) $ (pictures [container, txt])
+    | otherwise = scale s s . translate (x'/s) (y'/s) $ (pictures [box, txt])
       where
-        s = 1
+        s = 1 -- TODO: will need to do for bounce effect
         x' = fromIntegral x * size
         y' = fromIntegral y * size
         size = gridSize + dividerSize
-        container = color boxColor $ rectangleSolid gridSize gridSize
+        box = color boxColor $ rectangleSolid gridSize gridSize
         txt = translate (fst txtPos) (snd txtPos) . scale txtScale txtScale . color txtColor . text . show $ n
         txtColor
           | n == 2 || n == 4 || n == 4096 = txtBlack
           | otherwise = txtWhite
-        boxColor = gridColors !! colorIndex
-        colorIndex = round . (+ negate 1) . logBase 2 . fromIntegral $ n
+        boxColor = gridColor n 
         (txtPos, txtScale)
-          | n == 2 || n == 4 || n == 8 = (txtPos1Digit, txtScale1Digit)
-          | n == 16 || n == 32 || n == 64 = (txtPos2Digit, txtScale2Digit)
-          | n == 128 || n == 256 || n == 512 = (txtPos3Digit, txtScale3Digit)
-          | n == 1024 || n == 2048 || n == 4096 = (txtPos4Digit, txtScale4Digit)
+          | n == 2 || n == 4 || n == 8 = (pos1Digit, scale1Digit)
+          | n == 16 || n == 32 || n == 64 = (pos2Digit, scale2Digit)
+          | n == 128 || n == 256 || n == 512 = (pos3Digit, scale3Digit)
+          | n == 1024 || n == 2048 || n == 4096 || n == 8192 = (pos4Digit, scale4Digit)
           | otherwise = ((0,0),0)
 
 
