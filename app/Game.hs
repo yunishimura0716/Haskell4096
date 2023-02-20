@@ -68,7 +68,7 @@ playGame dirct game =
         else newBoard1
       isChanged = newBoard1 /= (board game)
       newBoard1 = shiftBoard dirct (board game)
--- continue, transition, or dead
+-- continue or dead
 gameContinue :: GameResult -> (GameState, Bool)
 gameContinue (ContinueGame game) = (game, True)
 gameContinue (EndOfGame game) = (game, False)
