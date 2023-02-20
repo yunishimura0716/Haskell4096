@@ -12,7 +12,9 @@ type Position = (Int, Int)
 
 data Grid = Grid {
   value :: Int,
-  position :: Position
+  position :: Position,
+  bouncestate :: BounceState,
+  scl :: Float
 }
   deriving (Eq, Show)
 
@@ -32,4 +34,4 @@ data GameResult = EndOfGame GameState
   deriving (Show)
 
 -- Bounce state of a grid used for GUI
-data BounceState = Inflate | Shrink | End deriving (Eq, Show)
+data BounceState = Grow | Shrink | End deriving (Eq, Show)

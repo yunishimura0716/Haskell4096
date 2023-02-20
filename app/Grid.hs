@@ -7,11 +7,10 @@ import Graphics.Gloss
 
 -- render for Grid
 instance Model Grid where
-  render (Grid n (x,y))
+  render (Grid n (x,y) _ scl)
     | n == 0 = blank
-    | otherwise = scale s s . translate (x'/s) (y'/s) $ (pictures [box, txt])
+    | otherwise = scale scl scl . translate (x'/scl) (y'/scl) $ (pictures [box, txt])
       where
-        s = 1 -- TODO: will need to do for bounce effect
         x' = fromIntegral x * size
         y' = fromIntegral y * size
         size = gridSize + dividerSize
@@ -35,9 +34,9 @@ instance Model Grid where
 combineGrids :: Int -> Int -> Grid -> Grid -> (Grid, Bool) 
 combineGrids x y g1 g2 =
   if g1Value == g2Value
-    then (Grid (g1Value + g2Value) (x, y), True)
+    then (Grid (g1Value + g2Value) (x, y) Grow 1, True)
   else
-    (Grid g1Value (x, y), False)
+    (Grid g1Value (x, y) End 1, False)
   where
     g1Value = value g1
     g2Value = value g2

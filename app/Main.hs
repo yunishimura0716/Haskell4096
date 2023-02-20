@@ -43,6 +43,18 @@ onMove (EventKey (SpecialKey k) Down _ _) result
 onMove _ result = result
 
 onStep :: Float -> GameResult -> GameResult
+onStep step (ContinueGame gamestate) = 
+  ContinueGame GameState { 
+    board = [ [ f gridtile | gridtile <- row ] | row <- board gamestate ], 
+    seed = seed gamestate }
+  where
+    f (Grid val pos bs scl) 
+      | val > 0 && scl < 1       = Grid val pos bs (scl+step*2.5)
+      | bs == Grow && scl < 1.15 = Grid val pos bs (scl+step*1.5)
+      | bs == Grow && scl >= 1.15= Grid val pos Shrink (scl-step*1.5)
+      | bs == Shrink && scl > 1  = Grid val pos Shrink (scl-step*1.5)
+      | bs == Shrink && scl <= 1 = Grid val pos End 1
+      | otherwise          = Grid val pos bs scl
 onStep _ result = result
 
 resultRender :: GameResult -> Picture
