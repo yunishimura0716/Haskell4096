@@ -20,7 +20,7 @@ giveRandomElement generator giveList = giveList !! rand where
 insertFunc :: Int -> Int -> Int -> Board -> [Grid]
 insertFunc randV chosenY i board =
   if i == chosenY
-    then reverse ((Grid randV (x, chosenY)) : (tail (reverse grids)))
+    then reverse ((Grid randV (x, chosenY) End 0) : (tail (reverse grids)))
   else grids
     where
       x = length grids - 1
@@ -68,7 +68,7 @@ playGame dirct game =
         else newBoard1
       isChanged = newBoard1 /= (board game)
       newBoard1 = shiftBoard dirct (board game)
--- continue or dead
+-- continue, transition, or dead
 gameContinue :: GameResult -> (GameState, Bool)
 gameContinue (ContinueGame game) = (game, True)
 gameContinue (EndOfGame game) = (game, False)
