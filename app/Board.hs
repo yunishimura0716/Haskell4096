@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
-
 module Board where
 
 import Data.List
@@ -133,3 +131,15 @@ shiftBoard dirct board =
   clearBoard newBoard
   where
     newBoard = fromLeftShiftBoard dirct (leftShiftBoard (toLeftShiftBoard dirct board))
+
+-- check if boards are equal
+boardsEqual :: Board -> Board -> Bool
+boardsEqual b1 b2
+    | length b1 /= length b2 = False
+    | length (flattenBoard b1) /= length (flattenBoard b2) = False
+    | otherwise =
+      not (any gridsUnequal (zip (concat b1) (concat b2)))
+      where
+        gridsUnequal (grid1, grid2) =
+          (value grid1 /= value grid2) || 
+          (position grid1 /= position grid2)
