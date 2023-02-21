@@ -66,7 +66,8 @@ playGame dirct game =
         if isChanged
           then randomInsert dirct (seed game) newBoard1
         else newBoard1
-      isChanged = newBoard1 /= (board game)
+      -- isChanged = newBoard1 /= (board game)
+      isChanged = not $ boardsEqual newBoard1 (board game)
       newBoard1 = shiftBoard dirct (board game)
 -- continue or dead
 gameContinue :: GameResult -> (GameState, Bool)
