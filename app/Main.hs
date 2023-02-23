@@ -48,13 +48,17 @@ onStep step (ContinueGame gamestate) =
     board = [ [ f gridtile | gridtile <- row ] | row <- board gamestate ], 
     seed = seed gamestate }
   where
-    f (Grid val pos bs scl) 
-      | val > 0 && scl < 1       = Grid val pos bs (scl+step*2.5)
-      | bs == Grow && scl < 1.15 = Grid val pos bs (scl+step*1.5)
-      | bs == Grow && scl >= 1.15= Grid val pos Shrink (scl-step*1.5)
-      | bs == Shrink && scl > 1  = Grid val pos Shrink (scl-step*1.5)
-      | bs == Shrink && scl <= 1 = Grid val pos End 1
-      | otherwise          = Grid val pos bs scl
+    f (Grid val pos as scl prg prV prP)
+      | val > 0 && scl < 1       = Grid val pos as (scl+step*2.5) prg prV prP
+      | as == Move && prg < 1    = Grid val pos as scl (prg+step*4.75) prV prP
+      | as == Move && prg >= 1   = Grid val pos End 1 1 val pos
+      | as == Merge && prg < 1   = Grid val pos as scl (prg+step*4.75) prV prP
+      | as == Merge && prg >= 1  = Grid val pos Grow 1 1 val pos
+      | as == Grow && scl < 1.15 = Grid val pos as (scl+step*1.5) prg prV prP
+      | as == Grow && scl >= 1.15= Grid val pos Shrink (scl-step*1.5) prg prV prP
+      | as == Shrink && scl > 1  = Grid val pos Shrink (scl-step*1.5) prg prV prP
+      | as == Shrink && scl <= 1 = Grid val pos End 1 prg prV prP
+      | otherwise          = Grid val pos as scl prg prV prP
 onStep _ result = result
 
 resultRender :: GameResult -> Picture
