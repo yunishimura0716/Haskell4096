@@ -1,6 +1,5 @@
 module Main (main) where
 
-import Lib
 import Game
 import System.Random
 import GameData
@@ -14,18 +13,24 @@ import Graphics.Gloss.Interface.Pure.Game hiding (shift)
 import Debug.Trace
 
 
+-- How many times we call onStep function in a second
 fps :: Int
 fps = 60
 
+-- Drawing windor setting
 window :: Display
 window = InWindow "4096" (500, 500) (50, 50)
 
+-- Background color of window
 background :: Color
 background = white
 
+-- Util for printing the current board to the console
 debugBoard :: GameState -> GameState
 debugBoard game = GameState (traceShowId (board game)) (seed game)
 
+-- The function called as a response of user input
+-- It takes the action (dirction) from the user input and current game result to return next game result
 onMove :: Event -> GameResult -> GameResult
 onMove (EventKey (SpecialKey k) Down _ _) result
 	| k == KeyLeft = f L result
@@ -42,6 +47,8 @@ onMove (EventKey (SpecialKey k) Down _ _) result
           (game, isContinue) = gameContinue result'
 onMove _ result = result
 
+-- The function called `fps` times in a second
+-- Normally, it extract the current board and grids, then modify to show Bounce Effect
 onStep :: Float -> GameResult -> GameResult
 onStep step (ContinueGame gamestate) = 
   ContinueGame GameState { 
