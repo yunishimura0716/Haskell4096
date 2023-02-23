@@ -1,6 +1,5 @@
 module Main (main) where
 
-import Lib
 import Game
 import System.Random
 import GameData
