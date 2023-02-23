@@ -5,7 +5,7 @@ import UIConstant
 import Render
 import Graphics.Gloss
 
--- render for Grid
+-- Render for Grid
 instance Model Grid where
   render (Grid n (x,y) _ scl)
     | n == 0 = blank
@@ -28,8 +28,8 @@ instance Model Grid where
           | otherwise = ((0,0),0)
 
 
--- combine the two grids; second grid combines to first grid
--- return (Grid, Bool) where Grid is the result of combine or first grid if it fails and Bool is true
+-- Combine the two grids; second grid combines to first grid
+-- Return (Grid, Bool) where Grid is the result of combine or first grid if it fails and Bool is true
 -- if it's success to combine or false
 combineGrids :: Int -> Int -> Grid -> Grid -> (Grid, Bool) 
 combineGrids x y g1 g2 =

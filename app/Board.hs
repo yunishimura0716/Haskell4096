@@ -146,7 +146,7 @@ shiftBoard dirct board =
   where
     newBoard = fromLeftShiftBoard dirct (leftShiftBoard (toLeftShiftBoard dirct board))
 
--- check if boards are equal
+-- Check if boards are equal
 boardsEqual :: Board -> Board -> Bool
 boardsEqual b1 b2
     | length b1 /= length b2 = False
