@@ -2,6 +2,9 @@ module UIConstant where
 
 import Graphics.Gloss.Data.Color
 
+
+-- The folowing constants and functions represents the values used in GUI drawing
+
 gridSize :: Float 
 gridSize = 50
 

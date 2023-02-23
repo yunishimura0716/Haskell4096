@@ -8,15 +8,22 @@ import Grid
 import UIConstant
 import Render
 
+
+-- Render function defined for Game type.
+-- It will call a render function for Board type
 instance Model GameState where
 	render g = render $ board g
 
+-- Util function to return random number from provided random seed and the list of nubmers
 giveRandomElement :: StdGen -> [Int] -> Int
 giveRandomElement generator giveList = giveList !! rand where
     n = length giveList
     (rand, _) = randomR (0,(n-1)) generator
 
--- insert a random Grid to the board 
+-- Insert a random Grid to the board, return the row with inserted new grid
+-- randV: the selected random number, used for new grid's value
+-- chosenY: the y coordinate that will have new grid
+-- i: represents the current row of board
 insertFunc :: Int -> Int -> Int -> Board -> [Grid]
 insertFunc randV chosenY i board =
   if i == chosenY
@@ -27,7 +34,8 @@ insertFunc randV chosenY i board =
       grids = board !! i
 
 
--- insert a grid with random number (2 or 4)
+-- Insert a grid with random number (2 or 4)
+-- It takes the direction, random seed and current board, then return the board with inserted new grid
 randomInsert :: Direction -> StdGen -> Board -> Board
 randomInsert dirct seed board =
   clearBoard (fromLeftShiftBoard dirct newBoard)
@@ -39,6 +47,8 @@ randomInsert dirct seed board =
       n = length board
       lfBoard = toLeftShiftBoard dirct board
 
+-- Identify the given game state is able to continue taking an action
+-- check if the board will change with every direction
 isLost :: GameState -> Bool
 isLost game =
   b == left_b && b == right_b && b == up_b && b == down_b
@@ -49,10 +59,11 @@ isLost game =
       left_b = shiftBoard L b
       b = board game
 
--- define game
+-- define game type
 type Game = Direction -> GameState -> GameResult
 
--- play a game
+-- Play a game
+-- It takes the direction and curretn game state, then returns the result of game
 playGame :: Game
 playGame dirct game =
   if not lost
@@ -69,12 +80,13 @@ playGame dirct game =
       -- isChanged = newBoard1 /= (board game)
       isChanged = not $ boardsEqual newBoard1 (board game)
       newBoard1 = shiftBoard dirct (board game)
--- continue or dead
+
+-- It extract the grame state and identify its' continuable or not from given game result
 gameContinue :: GameResult -> (GameState, Bool)
 gameContinue (ContinueGame game) = (game, True)
 gameContinue (EndOfGame game) = (game, False)
 
--- play
+-- This function will play the gramw in CUI version
 playCUI :: GameState -> IO GameState
 playCUI game =
   do

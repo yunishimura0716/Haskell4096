@@ -5,14 +5,7 @@ import UIConstant
 import Render
 import Graphics.Gloss
 
--- grid needs to be redesigned to use the animation state:
--- if "move" find distances and put grid at right place
--- if "merge" render both (use move logic from above)
--- if "other" just scale it by s
--- 
--- 
--- 
-
+-- Render for Grid
 instance Model Grid where
   render (Grid val (x, y) anis scl prog prevVal prevPos) 
     | anis == Move =
@@ -46,8 +39,9 @@ gridRenderHelper n s (x, y) =
       | n == 1024 || n == 2048 || n == 4096 || n == 8192 = (pos4Digit, scale4Digit)
       | otherwise = ((0,0),0)      
 
--- combine the two grids; second grid combines to first grid
--- return (Grid, Bool) where Grid is the result of combine or first grid if it fails and Bool is true
+
+-- Combine the two grids; second grid combines to first grid
+-- Return (Grid, Bool) where Grid is the result of combine or first grid if it fails and Bool is true
 -- if it's success to combine or false
 combineGrids :: Int -> Int -> Grid -> Grid -> (Grid, Bool) 
 combineGrids x y g1 g2 =
