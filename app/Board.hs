@@ -55,7 +55,7 @@ createBoard :: Int -> [[Grid]]
 createBoard n =
   [ [grid | grid <- grids, getY grid == i] | i <- [0..(n-1)] ]
     where
-      grids = map (\x -> Grid 0 (mod x n, div x n)) [0..lastIndex]
+      grids = map (\x -> Grid 0 (mod x n, div x n) End 1) [0..lastIndex]
       lastIndex = n * n - 1
       getY = snd . position
 
@@ -63,9 +63,11 @@ createBoard n =
 -- returns a board with correction position. 
 clearBoard :: Board -> Board
 clearBoard board =
-  [ [(Grid (getGridValue x y) (x,y)) | x <- [0..(n-1)]] | y <- [0..(n-1)] ]
+  [ [(Grid (getGridValue x y) (x,y) (getGridBS x y) (getGridScale x y)) | x <- [0..(n-1)]] | y <- [0..(n-1)] ]
     where
-      getGridValue x y = (value (getGrid x y))
+      getGridValue x y = value (getGrid x y)
+      getGridScale x y = scl (getGrid x y)
+      getGridBS x y    = bouncestate (getGrid x y)
       getGrid x y = (board !! y) !! x
       n = length board
 
@@ -96,22 +98,22 @@ removeBlanks x y (hd:tr) =
   if (value hd) == 0
     then removeBlanks x y tr 
   else
-    (Grid (value hd) (x, y)):(removeBlanks (x+1) y tr)
+    (Grid (value hd) (x, y) End 1):(removeBlanks (x+1) y tr)
 
 -- Add blank grids to the tail of the list
 -- n: the number of blank grides it's going to insert
 -- x & y: position values for next blank grid
 addBlanks :: Int -> Int -> Int -> [Grid] -> [Grid]
 addBlanks 0 _ _ grids = grids
-addBlanks n _ y [] = [(Grid 0 (i, y)) | i <- [0..(n-1)]]
+addBlanks n _ y [] = [(Grid 0 (i, y) End 1) | i <- [0..(n-1)]]
 addBlanks n x y grids =
-  addBlanks (n-1) (x+1) y (grids ++ [Grid 0 (x, y)])
+  addBlanks (n-1) (x+1) y (grids ++ [Grid 0 (x, y) End 1])
 
 -- Execute left shifting on the list of grids, and returns the result
 -- x & y: position values for next grid
 leftShift :: Int -> Int -> [Grid] -> [Grid]
 leftShift _ _ [] = []
-leftShift x y [grid] = [Grid (value grid) (x, y)]
+leftShift x y [grid] = [Grid (value grid) (x, y) End 1]
 leftShift x y (hd:hd2:tr) 
   | result = grid:(leftShift (x+1) y tr)
   | not result = hd:(leftShift (x+1) y (hd2:tr))
@@ -143,3 +145,15 @@ shiftBoard dirct board =
   clearBoard newBoard
   where
     newBoard = fromLeftShiftBoard dirct (leftShiftBoard (toLeftShiftBoard dirct board))
+
+-- check if boards are equal
+boardsEqual :: Board -> Board -> Bool
+boardsEqual b1 b2
+    | length b1 /= length b2 = False
+    | length (flattenBoard b1) /= length (flattenBoard b2) = False
+    | otherwise =
+      not (any gridsUnequal (zip (concat b1) (concat b2)))
+      where
+        gridsUnequal (grid1, grid2) =
+          (value grid1 /= value grid2) || 
+          (position grid1 /= position grid2)
