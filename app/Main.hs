@@ -83,7 +83,12 @@ getUserBoardSize =
       then do
         putStrLn "That's not a valid number... try again (enter 4 or 5)"
         getUserBoardSize
-      else return (helper n)
+      else if helper n < 2
+        then do
+          putStrLn "You will lose on the first try... choose a different number"
+          getUserBoardSize
+      else 
+        return (helper n)
   where
     helper :: Maybe Int -> Int
     helper Nothing = error "problem"

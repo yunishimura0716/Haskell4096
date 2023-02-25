@@ -38,11 +38,17 @@ pos3Digit = (negate 15, negate 7)
 pos4Digit :: (Float, Float)
 pos4Digit = (negate 18,negate 5)
 
-fitGridToBoard4 :: Float
-fitGridToBoard4 = negate (dividerSize*1.5 + gridSize*1.5)
+fitGridToBoardN :: Int -> Float 
+fitGridToBoardN n = 
+  negate (dividerSize*d + gridSize*d)
+  where 
+    d = (fromIntegral n - 4) * 0.5 + 1.5
 
-fitGridToBoard5 :: Float
-fitGridToBoard5 = negate (dividerSize*2.0 + gridSize*2.0)
+-- fitGridToBoard4 :: Float
+-- fitGridToBoard4 = negate (dividerSize*1.5 + gridSize*1.5)
+
+-- fitGridToBoard5 :: Float
+-- fitGridToBoard5 = negate (dividerSize*2.0 + gridSize*2.0)
 
 boardBackground :: Color
 boardBackground = greyN 0.8
