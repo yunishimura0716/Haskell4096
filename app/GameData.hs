@@ -14,9 +14,9 @@ data Grid = Grid {
   value :: Int,
   position :: Position,
   animationState :: AnimationState,
-  scl :: Float, -- scl of grid
+  scl :: Float, -- scale of grid
   progress :: Float, -- progress between grids; 0 is no progress, 1 is full progress
-  prevValue :: Int,
+  prevValue :: Int, 
   prevPosition :: Position
 }
   deriving (Eq, Show)
