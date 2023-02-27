@@ -1,3 +1,4 @@
+{-# LANGUAGE BlockArguments #-}
 module Main (main) where
 
 import Game
@@ -35,17 +36,17 @@ debugBoard game = GameState (traceShowId (board game)) (seed game)
 -- It takes the action (dirction) from the user input and current game result to return next game result
 onMove :: Event -> GameResult -> GameResult
 onMove (EventKey (SpecialKey k) Down _ _) result
-  | k == KeyLeft = f L result
-  | k == KeyRight = f R result
-  | k == KeyUp = f U result
-  | k == KeyDown = f D result
-  | otherwise = result
-    where
+        | k == KeyLeft = f L result
+        | k == KeyRight = f R result
+        | k == KeyUp = f U result
+        | k == KeyDown = f D result
+        | otherwise = result
+          where
       f dirct result'
         | not isContinue = result'
         -- | otherwise = playGame dirct (debugBoard game)
         | otherwise = playGame dirct game
-        where 
+        where
           (game, isContinue) = gameContinue result'
 onMove _ result = result
 
@@ -53,6 +54,7 @@ onMove _ result = result
 -- If a game can continue (meaning the the current gamestate was built with the ContinueGame constructor), then the animation effects are changed
 --  otherwise, the original gamestate is returned.
 onStep :: Float -> GameResult -> GameResult
+
 onStep delta_t (ContinueGame gamestate) = 
   ContinueGame GameState { 
     board = [ [ processTile gridtile | gridtile <- row ] | row <- board gamestate ], 
@@ -86,7 +88,7 @@ resultRender n result
 getUserBoardSize :: IO Int
 getUserBoardSize =
   do
-    putStrLn "\nWhat size board would you like?"
+    putStrLn "\nWhat size board would you like (enter 4 or 5) ?"
     boardsize <- getLine
     let n = (readMaybe boardsize :: Maybe Int)
     if isNothing n
@@ -100,15 +102,14 @@ getUserBoardSize =
     else 
       return (fromJust n)
 
-main :: IO ()
 main =
   do
     n <- getUserBoardSize
     let seed = mkStdGen 40
+    -- Allow the users to choose which board they want to play
     let board = createBoard n
     -- print(board)
     -- play (GameState board seed)
     let initBoard = randomInsert L seed board
     let game = ContinueGame (GameState initBoard seed)
     play window background fps game (resultRender n) onMove onStep
-

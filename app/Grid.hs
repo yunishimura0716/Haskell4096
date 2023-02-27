@@ -8,32 +8,30 @@ import Graphics.Gloss
 
 -- Render for Grid
 instance Model Grid where
-  render (Grid val (x, y) anis scl prog prevVal prevPos)
+  render (Grid val (x, y) anis scl prog prevVal prevPos) 
     | anis == Move =
       gridRenderHelper val scl (x', y')
-    | anis == Merge =
+    | anis == Merge = 
       pictures [gridRenderHelper prevVal scl (x', y'), gridRenderHelper prevVal scl (x2, y2)]
     | otherwise    =
-      gridRenderHelper val scl (size * fromIntegral x / scl, size * fromIntegral y / scl)
+      gridRenderHelper val scl (size * (fromIntegral x) / scl, size * (fromIntegral y) / scl)
       where
         (x', y')
           | x2 == x1  = (x1, y1 + (y2 - y1) * prog)
           | otherwise = (x1 + (x2 - x1) * prog, y1)
-        (x2, y2) = (size * fromIntegral x / scl, size * fromIntegral y / scl)
-        (x1, y1) = (size * fromIntegral (fst prevPos) / scl, size * fromIntegral (snd prevPos) / scl)
+        (x2, y2) = (size * (fromIntegral x) / scl, size * (fromIntegral y) / scl)
+        (x1, y1) = (size * (fromIntegral (fst prevPos)) / scl, size * (fromIntegral (snd prevPos)) / scl)     
         size = gridSize + dividerSize
-
--- handle the rendering of a single tile (each "Grid" may require rendering multiple squares to show animation
 gridRenderHelper :: Int -> Float -> (Float, Float) -> Picture
 gridRenderHelper n s (x, y) =
   scale s s . translate x y $ pictures [box, txt]
   where
     box = color boxColor $ rectangleSolid gridSize gridSize
-    txt = uncurry translate txtPos . scale txtScale txtScale . color txtColor . text . show $ n
+    txt = translate (fst txtPos) (snd txtPos) . scale txtScale txtScale . color txtColor . text . show $ n
     txtColor
       | n == 2 || n == 4 || n == 4096 = txtBlack
       | otherwise = txtWhite
-    boxColor = gridColor n
+    boxColor = gridColor n 
     (txtPos, txtScale)
       | n == 2 || n == 4 || n == 8 = (pos1Digit, scale1Digit)
       | n == 16 || n == 32 || n == 64 = (pos2Digit, scale2Digit)
