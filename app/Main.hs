@@ -81,7 +81,7 @@ resultRender n result
 getUserBoardSize :: IO Int
 getUserBoardSize =
   do
-    putStrLn "\nWhat size board would you like?"
+    putStrLn "\nWhat size board would you like (enter 4 or 5) ?"
     boardsize <- getLine
     let n = (readMaybe boardsize :: Maybe Int)
     if n == Nothing
@@ -99,32 +99,12 @@ getUserBoardSize =
     helper Nothing = error "problem"
     helper (Just i) = i
 
-boardSelectIO :: IO Int
-boardSelectIO =
-  do
-    putStrLn ("Press 0 (4*4) or 1 (5*5) > ")
-    line <- getLine
-    let result
-          | (line == "0") = 
-            do return 4
-          | (line == "1") = do return 5
-          | otherwise =
-            do
-              putStrLn "Wrong Input."
-              r <- boardSelectIO
-              return r
-    v <- result
-    return v
-
-main :: IO ()
 main =
   do
     n <- getUserBoardSize
     let seed = mkStdGen 40
     -- Allow the users to choose which board they want to play
-    putStrLn "Please choose board size: "
-    bSize <- boardSelectIO
-    let board = createBoard bSize
+    let board = createBoard n
     -- print(board)
     -- play (GameState board seed)
     let initBoard = randomInsert L seed board
