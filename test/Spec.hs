@@ -54,7 +54,7 @@ main = hspec $ do
   describe "Board.shiftBoard" $ do
     it "no changes to boards with a single tile on the same wall as the direction parameter (e.g. single tile on left wall won't shift left)" $ do 
       shiftBoard L board_2_UL `shouldBe` board_2_UL_m
-      -- shiftBoard L board_2_LL `shouldBe` board_2_LL_m
+      shiftBoard L board_2_LL `shouldBe` board_2_LL_m
       shiftBoard R board_2_UR `shouldBe` board_2_UR_m 
       shiftBoard R board_2_LR `shouldBe` board_2_LR_m 
       shiftBoard U board_2_UL `shouldBe` board_2_UL_m 

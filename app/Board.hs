@@ -61,7 +61,9 @@ clearBoard :: Board -> Board
 clearBoard board =
   [ [(Grid (getGridValue x y) (x, y) (getGridAS x y) (getGridScale x y) (getGridProg x y) (getGridPrevVal x y) (getGridPrevPos x y)) | x <- [0..(n-1)]] | y <- [0..(n-1)] ]
     where
-      getGridPrevPos x y  = prevPosition (getGrid x y)
+      getGridPrevPos x y
+        | getGridValue x y == 0 = (x, y)
+        | otherwise = prevPosition (getGrid x y)
       getGridPrevVal x y  = prevValue (getGrid x y)
       getGridProg x y  = progress (getGrid x y)
       getGridValue x y = value (getGrid x y)
@@ -106,7 +108,7 @@ addBlanks :: Int -> Int -> Int -> [Grid] -> [Grid]
 addBlanks 0 _ _ grids = grids
 addBlanks n _ y [] = [(Grid 0 (i, y) End 1 1 0 (i, y)) | i <- [0..(n-1)]]
 addBlanks n x y grids =
-  addBlanks (n-1) (x+1) y (grids ++ [Grid 0 (x, y) End 1 0 0 (x, y)])
+  addBlanks (n-1) (x+1) y (grids ++ [Grid 0 (x, y) End 1 1 0 (x, y)])
 
 -- Execute left shifting on the list of grids, and returns the result
 -- x & y: position values for next grid
