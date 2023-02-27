@@ -37,4 +37,4 @@ data GameResult = EndOfGame GameState
   deriving (Show)
 
 -- Bounce state of a grid used for GUI
-data AnimationState =  Move | Merge | Grow | Shrink | End deriving (Eq, Show)
+data AnimationState =  Move | Merge | Grow | Shrink | End deriving (Eq, Show, Enum, Bounded)

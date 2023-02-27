@@ -23,6 +23,8 @@ dependencies:
 - base >= 4.7 && < 5
 - gloss == 1.13.2.2 
 - random == 1.2.1.1
+- QuickCheck
+- hspec
 
 ghc-options:
 - -Wall
@@ -52,7 +54,7 @@ executables:
 tests:
   Haskell4096-test:
     main:                Spec.hs
-    source-dirs:         test
+    source-dirs:         test app
     ghc-options:
     - -threaded
     - -rtsopts
