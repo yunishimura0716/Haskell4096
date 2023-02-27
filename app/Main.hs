@@ -12,6 +12,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Data.ViewPort
 import Graphics.Gloss.Interface.Pure.Game hiding (shift)
 import Debug.Trace
+import Text.Read
 
 
 -- How many times we call onStep function in a second
@@ -69,12 +70,34 @@ onStep step (ContinueGame gamestate) =
       | otherwise          = Grid val pos as scl prg prV prP
 onStep _ result = result
 
-resultRender :: GameResult -> Picture
-resultRender result
-  | not isContinue = pictures [translate (negate 100) 150 . scale 0.2 0.2 . text $ "You lose!!!!!", render (board game)]
+resultRender :: Int -> (GameResult -> Picture)
+resultRender n result
+  | not isContinue = pictures [translate (negate 100) y' . scale 0.2 0.2 . text $ "You lose!!!!!", render (board game)]
   | otherwise = render (board game)
     where
       (game, isContinue) = gameContinue result
+      y' = 20 + (fromIntegral n * gridSize + (fromIntegral n + 1) * dividerSize) / 2
+
+getUserBoardSize :: IO Int
+getUserBoardSize =
+  do
+    putStrLn "\nWhat size board would you like?"
+    boardsize <- getLine
+    let n = (readMaybe boardsize :: Maybe Int)
+    if n == Nothing
+      then do
+        putStrLn "That's not a valid number... try again (enter 4 or 5)"
+        getUserBoardSize
+      else if helper n < 2
+        then do
+          putStrLn "You will lose on the first try... choose a different number"
+          getUserBoardSize
+      else 
+        return (helper n)
+  where
+    helper :: Maybe Int -> Int
+    helper Nothing = error "problem"
+    helper (Just i) = i
 
 boardSelectIO :: IO Int
 boardSelectIO =
@@ -96,6 +119,7 @@ boardSelectIO =
 main :: IO ()
 main =
   do
+    n <- getUserBoardSize
     let seed = mkStdGen 40
     -- Allow the users to choose which board they want to play
     putStrLn "Please choose board size: "
@@ -105,4 +129,4 @@ main =
     -- play (GameState board seed)
     let initBoard = randomInsert L seed board
     let game = ContinueGame (GameState initBoard seed)
-    play window background fps game resultRender onMove onStep
+    play window background fps game (resultRender n) onMove onStep
