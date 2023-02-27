@@ -70,5 +70,5 @@ gridColor n
   | n == 1024 = makeColorI 237 197 63  255   -- #edc53f
   | n == 2048 = makeColorI 237 194 46  255   -- #edc22e
   | n == 4096 = makeColorI 255 255 255 255  -- #ffffff
-  | otherwise = makeColorI 255 255 255 255
+  | otherwise = makeColorI 255 255 255 0
 
