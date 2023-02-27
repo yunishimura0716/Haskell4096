@@ -10,11 +10,14 @@ data Direction = L | R | U | D
 -- Grid and relevant types
 type Position = (Int, Int)
 
-data Grid = Grid {
+data Grid = Grid {  
   value :: Int,
   position :: Position,
-  bouncestate :: BounceState,
-  scl :: Float
+  animationState :: AnimationState,
+  scl :: Float, -- scl of grid
+  progress :: Float, -- progress between grids; 0 is no progress, 1 is full progress
+  prevValue :: Int,
+  prevPosition :: Position
 }
   deriving (Eq, Show)
 
@@ -34,4 +37,4 @@ data GameResult = EndOfGame GameState
   deriving (Show)
 
 -- Bounce state of a grid used for GUI
-data BounceState = Grow | Shrink | End deriving (Eq, Show)
+data AnimationState =  Move | Merge | Grow | Shrink | End deriving (Eq, Show)
