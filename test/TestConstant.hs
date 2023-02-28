@@ -2,6 +2,7 @@ module TestConstant where
 
 import GameData
 import Data.List
+import Board (flattenBoard)
 -- a massive list of test constants
 
 {- format: "board"_{boardSize}_{index}} -}
@@ -26,7 +27,7 @@ board_2_UL =
 board_2_UR :: Board
 board_2_UR =
   [[Grid 0 (0, 0) End 1 1 0 (0, 0), Grid 0 (1, 0) End 1 1 0 (1, 0)],
-   [Grid 0 (0, 1) End 1 1 0 (0, 1), Grid 2 (1, 1) End 1 0 2 (1, 1)]]
+   [Grid 0 (0, 1) End 1 1 0 (0, 1), Grid 2 (1, 1) End 1 1 2 (1, 1)]]
 
 -- one 2 in the lower left (unmoved)
 board_2_LL :: Board
@@ -41,29 +42,34 @@ board_2_LR =
    [Grid 0 (0, 1) End 1 1 0 (0, 1), Grid 0 (1, 1) End 1 1 0 (1, 1)]]
 
 -- one 2 in the upper left (moved)
-board_2_UL_m :: Board
-board_2_UL_m =
+board_2_UL_m :: Board -> Board
+board_2_UL_m oldBoard =
   [[Grid 0 (0, 0) End  1 1 0 (0, 0), Grid 0 (1, 0) End 1 1 0 (1, 0)],
-   [Grid 2 (0, 1) Move 1 0 2 (0, 1), Grid 0 (1, 1) End 1 1 0 (1, 1)]]
+   [Grid 2 (0, 1) Move 1 0 2 (position (getNoneZeroGridTile oldBoard)), Grid 0 (1, 1) End 1 1 0 (1, 1)]]
 
 -- one 2 in the upper right (moved)
-board_2_UR_m :: Board
-board_2_UR_m =
+board_2_UR_m :: Board -> Board
+board_2_UR_m oldBoard =
   [[Grid 0 (0, 0) End 1 1 0 (0, 0), Grid 0 (1, 0) End  1 1 0 (1, 0)],
-   [Grid 0 (0, 1) End 1 1 0 (0, 1), Grid 2 (1, 1) Move 1 0 2 (1, 1)]]
+   [Grid 0 (0, 1) End 1 1 0 (0, 1), Grid 2 (1, 1) Move 1 0 2 (position (getNoneZeroGridTile oldBoard))]]
 
 -- one 2 in the lower left (moved)
-board_2_LL_m :: Board
-board_2_LL_m =
-  [[Grid 2 (0, 0) Move 1 0 2 (0, 0), Grid 0 (1, 0) End 1 1 0 (1, 0)],
+board_2_LL_m :: Board -> Board
+board_2_LL_m oldBoard =
+  [[Grid 2 (0, 0) Move 1 0 2 (position (getNoneZeroGridTile oldBoard)), Grid 0 (1, 0) End 1 1 0 (1, 0)],
    [Grid 0 (0, 1) End  1 1 0 (0, 1), Grid 0 (1, 1) End 1 1 0 (1, 1)]]
 
 -- one 2 in the lower right (moved)
-board_2_LR_m :: Board
-board_2_LR_m =
-  [[Grid 0 (0, 0) End 1 1 0 (0, 0), Grid 2 (1, 0) Move 1 0 2 (1, 0)],
+board_2_LR_m :: Board -> Board
+board_2_LR_m oldBoard =
+  [[Grid 0 (0, 0) End 1 1 0 (0, 0), Grid 2 (1, 0) Move 1 0 2 (position (getNoneZeroGridTile oldBoard))],
    [Grid 0 (0, 1) End 1 1 0 (0, 1), Grid 0 (1, 1) End  1 1 0 (1, 1)]]
 
+getNoneZeroGridTile :: Board -> Grid
+getNoneZeroGridTile board
+  | null tile = error "didn't find nonzero grid"
+  | otherwise = head tile
+    where tile = filter (\gridtile -> value gridtile /= 0) (flattenBoard board)
 
 {- BOARD SIZE 3 ; each board is manually constructed -}
 
@@ -77,16 +83,16 @@ board_2_LR_m =
 {- BOARD SIZE ARBITRARY -}
 boardNCorner :: Corner -> Int -> Int -> AnimationState -> Board
 boardNCorner corner n val aState
-  | corner == UpperLeft = 
+  | corner == LowerLeft = 
     (Grid val (0, 0) aState 1 p val (0, 0):[ Grid 0 (x, 0) End 1 1 0 (x, 0) | x <- [1..n-1]]) -- first row
     : [[Grid 0 (x, y) End 1 1 0 (x, y) | x <- [0..n-1]] | y <- [1..n-1]] -- lower rows    
-  | corner == UpperRight = 
+  | corner == LowerRight = 
     ([ Grid 0 (x, 0) End 1 1 0 (x, 0) | x <- [0..n-2]]++[Grid val (n-1, 0) aState 1 p val (n-1, 0)]) -- first row
     : [[Grid 0 (x, y) End 1 1 0 (x, y) | x <- [0..n-1]] | y <- [1..n-1]] -- lower rows
-  | corner == LowerLeft = 
+  | corner == UpperLeft = 
     [[Grid 0 (x, y) End 1 1 0 (x, y) | x <- [0..n-1]] | y <- [0..n-2]] -- upper rows
     ++ [Grid val (0, n-1) aState 1 p val (0, n-1) : [ Grid 0 (x, n-1) End 1 1 0 (x, n-1) | x <- [1..n-1]]]    
-  | corner == LowerRight =
+  | corner == UpperRight =
     [[Grid 0 (x, y) End 1 1 0 (x, y) | x <- [0..n-1]] | y <- [0..n-2]] -- upper rows
     ++ [[ Grid 0 (x, n-1) End 1 1 0 (x, n-1) | x <- [0..n-2]] -- first ..n-2 columns
       ++[Grid val (n-1, n-1) aState 1 p val (n-1, n-1)]]
