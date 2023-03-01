@@ -21,8 +21,9 @@
 3. If you end the game, just type `Ctrl-C` on the console
 
 # ToDo
-- be able to allow the users to choose the size of board (4 * 4, 5 * 5, 6 * 6)
-  - can do for 4 * 4 and 5 * 5 now
+- [x] be able to allow the users to choose the size of board (4 * 4, 5 * 5, 6 * 6, n * n)
 - scoring logic (if possible)
-- write a test
-- create a docs
+- [x] write a test
+- [ ] correct animation logic to work for combined movement and merge
+- [ ] add
+- [ ] create a docs
