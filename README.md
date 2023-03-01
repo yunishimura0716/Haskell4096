@@ -25,5 +25,4 @@
 - scoring logic (if possible)
 - [x] write a test
 - [ ] correct animation logic to work for combined movement and merge
-- [ ] add
 - [ ] create a docs
